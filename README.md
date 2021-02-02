@@ -1,2 +1,2 @@
-#Advanced Computer Systems Projects
-#Cohen Davis & Tawhid Khan
+Advanced Computer Systems Projects - 
+Cohen Davis & Tawhid Khan
