@@ -51,18 +51,37 @@ return;
 }
 
 void flo_matrixmult_intrinsic(float** &mat1, float** &mat2, float** &result, int size) { //matrix multiplication using floating-point data and SIMD intrinsics
-return;
+
+  for (int i=0; i<size; i+=8) {
+    for(int j=0; j<size; ++j) {
+      //res = result[i][j]
+      __m256 res = {0,0,0,0,0,0,0,0};
+      for(int k=0; k<size; ++k) {
+        res = _mm256_add_ps(
+          res, //res += mat1[i][k] * mat2[k][j]
+          _mm256_mul_ps(
+              _mm256_load_ps(),
+              _mm256_broadcast_ss()
+          )
+        );
+      }
+      _mm256_store_ps(, res); //result[i,j] = res
+    }
+  }
 }
 
 
 int main(int argc, char** argv){
   int mat_size;
   bool mat_type;
+  bool mult_type;
   //User input
   std::cout << "Input maxtrix size (matrix will be square): ";
   std::cin >> mat_size;
   std::cout << "Input data type (0 for fixed-point, 1 for floating point): ";
   std::cin >> mat_type;
+  std::cout << "Input multiplication type (0 for normal, 1 for with SIMD intrinsics): ";
+  std::cin >> mult_type;
 
   //Initialize possible matrices
   short int** mat_1_fix = new short int*[mat_size];
@@ -81,38 +100,53 @@ int main(int argc, char** argv){
     mat_result_flo[i] = new float[mat_size];
   }
   std::cout << "Matrices initialized" << std::endl;
-  //Call corresponding matrix generation functions
-  if (mat_type == 0) {
+
+  if (mat_type == 0) { //fixed point mult
     rand_matrix_fix(mat_1_fix, mat_size);
     rand_matrix_fix(mat_2_fix, mat_size);
     std::cout << "Matrices generated" << std::endl;
 
-    clock_t Time1 = clock();
-    fix_matrixmult_normal(mat_1_fix, mat_2_fix, mat_result_fix, mat_size);
-    clock_t Time2 = clock();
-    float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC;
-    std::cout << "Normal multiplication complete" << std::endl;
-    printf("Time taken for normal multiplication is %.7f \n", TotalTimeLoop);
+    if(mult_type == 0){ //normal mult
+      clock_t Time1 = clock();
+      fix_matrixmult_normal(mat_1_fix, mat_2_fix, mat_result_fix, mat_size);
+      clock_t Time2 = clock();
+      float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC;
+      std::cout << "Normal multiplication complete" << std::endl;
+      printf("Time taken for normal multiplication is %.7f \n", TotalTimeLoop);
 
-    fix_matrixmult_intrinsic(mat_1_fix, mat_2_fix, mat_result_fix, mat_size);
-    std::cout << "SIMD multiplication complete" << std::endl;
-    //will need to add timing functionality and/or decide what we want to output
+    }
+    else { //SIMD mult
+      clock_t Time1 = clock();
+      fix_matrixmult_intrinsic(mat_1_fix, mat_2_fix, mat_result_fix, mat_size);
+      clock_t Time2 = clock();
+      float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC;
+      std::cout << "SIMD multiplication complete" << std::endl;
+      printf("Time taken for SIMD multiplication is %.7f \n", TotalTimeLoop);
+    }
+
   }
-  else {
+  else { //floating point mult
     rand_matrix_flo(mat_1_flo, mat_size);
     rand_matrix_flo(mat_2_flo, mat_size);
     std::cout << "Matrices generated" << std::endl;
 
-    clock_t Time1 = clock();
-    flo_matrixmult_normal(mat_1_flo, mat_2_flo, mat_result_flo, mat_size);
-    clock_t Time2 = clock();
-    float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC;
-    std::cout << "Normal multiplication complete" << std::endl;
-    printf("Time taken for normal multiplication is %.7f \n", TotalTimeLoop);
+    if(mult_type == 0){ //normal mult
+      clock_t Time1 = clock();
+      flo_matrixmult_normal(mat_1_flo, mat_2_flo, mat_result_flo, mat_size);
+      clock_t Time2 = clock();
+      float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC;
+      std::cout << "Normal multiplication complete" << std::endl;
+      printf("Time taken for normal multiplication is %.7f \n", TotalTimeLoop);
+    }
+    else { //SIMD mult
+      clock_t Time1 = clock();
+      flo_matrixmult_intrinsic(mat_1_flo, mat_2_flo, mat_result_flo, mat_size);
+      clock_t Time2 = clock();
+      float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC;
+      std::cout << "SIMD multiplication complete" << std::endl;
+      printf("Time taken for SIMD multiplication is %.7f \n", TotalTimeLoop);
+    }
 
-    flo_matrixmult_intrinsic(mat_1_flo, mat_2_flo, mat_result_flo, mat_size);
-    std::cout << "SIMD multiplication complete" << std::endl;
-    //will need to add timing functionality and/or decide what we want to output
   }
 
   //Heap Cleanup
