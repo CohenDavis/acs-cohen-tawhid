@@ -47,7 +47,27 @@ void flo_matrixmult_normal(float** &mat1, float** &mat2, float** &result, int si
 }
 
 void fix_matrixmult_intrinsic(short int** &mat1, short int** &mat2, short int** &result, int size) { //matrix multiplication using fixed-point data and SIMD intrinsics
-return;
+  for (int i=0; i<size; i+=8) {
+    for(int j=0; j<size; ++j) {
+      //res = result[i][j]
+      __m256 res = {0,0,0,0,0,0,0,0};
+      for(int k=0; k<size; ++k) {
+        //__m256i mat1_val = _mm_load_si128(&mat1[i][k]);
+        float mat1_val = (float)(mat1[i][k]);
+        float mat2_val = (float)(mat2[k][j]);
+        res = _mm256_add_ps(
+          res,
+          _mm256_mul_ps(
+            _mm256_load_ps(&mat1_val),
+            _mm256_broadcast_ss(&mat2_val)
+            )
+        );
+      }
+      for (int ii=i-8; ii<i; ii++){
+        result[i][j] = res[ii];
+      }
+    }
+  }
 }
 
 void flo_matrixmult_intrinsic(float** &mat1, float** &mat2, float** &result, int size) { //matrix multiplication using floating-point data and SIMD intrinsics
@@ -58,14 +78,17 @@ void flo_matrixmult_intrinsic(float** &mat1, float** &mat2, float** &result, int
       __m256 res = {0,0,0,0,0,0,0,0};
       for(int k=0; k<size; ++k) {
         res = _mm256_add_ps(
-          res, //res += mat1[i][k] * mat2[k][j]
+          res,
           _mm256_mul_ps(
-              _mm256_load_ps(),
-              _mm256_broadcast_ss()
-          )
+            _mm256_loadu_ps(&mat1[i][k]),
+            _mm256_broadcast_ss(&mat2[k][j])
+            )
         );
       }
-      _mm256_store_ps(, res); //result[i,j] = res
+      for (int ii=i-8; ii<i; ii++){
+        result[i][j] = res[ii];
+      }
+        
     }
   }
 }
