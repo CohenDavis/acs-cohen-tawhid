@@ -1,5 +1,7 @@
 Course Mini-Project #1: Matrix-Matrix Multiplication with SIMD Instructions
 
+##Overview
+
 Compile and run using the following command:
 
 ```
