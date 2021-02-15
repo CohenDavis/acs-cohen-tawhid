@@ -66,3 +66,20 @@ void fix_matrixmult_normal(short int** &mat1, short int** &mat2, short int** &re
 Using intrinsics for Intel x86, the naive multiplication operation can be sped up drastically while still using a similar algorithm. During matrix multiplication, very simple arithmetic operations are performed repeatedly. These operations are loading, storing, multiplying, and adding data. SIMD allows the code to apply single instruction on large number of data points allowing significant performance gains. For example, instead of performing an operation on each value in a matrix one by one, SIMD can allow n values to be read, operated on, and written back to memory. 
 
 The SIMD algorithm for multiplying floating point matrices will be very similar to the naive implementation. The key difference is it will load, multiply, and store multiple data points into a 256 bit register. 
+
+# Performance Comparison
+
+Tests were performed with various nxn matrices containing either floating point or fixed point data to compare the time it took to multiply them. The following table shows the time in seconds it took to multiply different matrices using SIMD or naive multiplication method. 
+
+Matrix size n | SIMD-Float
+------------ | -------------
+1000 | 1.1
+2000 | 20.0
+3000 | 43.6
+4000 | 111.6
+5000 | 236.2
+6000 | 463.9
+7000 | 674.2
+8000 | 1030.5
+9000 | 1502.2
+10000 | 1993.5
