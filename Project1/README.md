@@ -71,7 +71,7 @@ The SIMD algorithm for multiplying floating point matrices will be very similar 
 
 Tests were performed with various nxn matrices containing either floating point or fixed point data to compare the time it took to multiply them. The following table shows the time in seconds it took to multiply different matrices using SIMD or naive multiplication method. 
 
-Matrix size n | SIMD-Float
+Matrix size n | SIMD-Float (time in seconds)
 ------------ | -------------
 1000 | 1.1
 2000 | 20.0
@@ -83,3 +83,16 @@ Matrix size n | SIMD-Float
 8000 | 1030.5
 9000 | 1502.2
 10000 | 1993.5
+
+Matrix size n | SIMD-Int (time in seconds)
+------------ | -------------
+1000 | 1.5
+2000 | 18.5
+3000 | 66.1
+4000 | 163.8
+5000 | 360.3
+6000 | 638.4
+7000 | 1020.7
+8000 | 1592.9
+9000 | 2197.2
+10000 | 3957.6
