@@ -54,8 +54,8 @@ void fix_matrixmult_normal(short int** &mat1, short int** &mat2, short int** &re
   	{
   		for (int k = 0; k < size; k++)
   		{
-        result[i][j] += mat1[i][k] * mat2[k][j];
-      }
+            result[i][j] += mat1[i][k] * mat2[k][j];
+        }
     }
   }
 }
@@ -65,4 +65,4 @@ void fix_matrixmult_normal(short int** &mat1, short int** &mat2, short int** &re
 
 Using intrinsics for Intel x86, the naive multiplication operation can be sped up drastically while still using a similar algorithm. During matrix multiplication, very simple arithmetic operations are performed repeatedly. These operations are loading, storing, multiplying, and adding data. SIMD allows the code to apply single instruction on large number of data points allowing significant performance gains. For example, instead of performing an operation on each value in a matrix one by one, SIMD can allow n values to be read, operated on, and written back to memory. 
 
-The SIMD 
+The SIMD algorithm for multiplying floating point matrices will be very similar to the naive implementation. The key difference is it will load, multiply, and store multiple data points into a 256 bit register. 
