@@ -1,6 +1,6 @@
 Course Mini-Project #1: Matrix-Matrix Multiplication with SIMD Instructions
 
-#Overview
+# Overview
 
 Compile and run using the following command:
 
@@ -12,4 +12,4 @@ The code will then ask the user for three inputs. The first input will be size n
 
 After the inputs are taken in, the code will generate a two matrices of size nxn and fill them with random numbers. After the matrices are intialized and generated, it will then multiply the two matrices using either SIMD or naive algorithm and record the results in a result matrix. Finally, the code will output the time taken for the program to run. 
 
-#Matrix Initialization and Generation
+# Matrix Initialization and Generation
