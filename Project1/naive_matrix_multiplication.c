@@ -1,3 +1,11 @@
+
+
+/*	- THIS IS A TEST FILE	-
+	- DO NOT USE - 
+	- THE MAIN SIMD_MATRIX.CPP FILE CONTAINS ALL NECESSARY FUNCTIONALITY FOR SIMD AND NORMAL MULTIPLICATION	-	
+/*
+
+
 #include <stdio.h>
 #include <time.h>
 
@@ -37,3 +45,8 @@ float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC;
 printf("Time taken by loop is %.7f \n", TotalTimeLoop);
 return 0;
 }
+
+/*	- THIS IS A TEST FILE	-
+	- DO NOT USE - 
+	- THE MAIN SIMD_MATRIX.CPP FILE CONTAINS ALL NECESSARY FUNCTIONALITY FOR SIMD AND NORMAL MULTIPLICATION	-	
+/*
