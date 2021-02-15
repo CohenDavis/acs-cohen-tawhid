@@ -29,3 +29,34 @@ for(int i = 0; i < mat_size; i++){
     mat_1[i] = new short int[mat_size];
 }
 ```
+
+After the matrix is initialized then a special function rand_matrix() will fill each value inside the matrix with a random integer:
+
+```
+void rand_matrix_fix(short int** &input, int size) { //generate random fixed-point data matrix
+  for (int i = 0; i < size; i++){
+    for (int j = 0; j < size; j++) {
+      input[i][j] = rand() % 100;
+    }
+  }
+}
+```
+
+# Naive Matrix Multiplication
+
+Naive method to multiply matrices is to go to each row and column of two matrices then multiply both values and sum them. An algorithm for this operation takes O(n^3) because it utilizes three for loops of size n to calculate the dot products. The naive multiplication for short int matrices is shown below:
+
+```
+void fix_matrixmult_normal(short int** &mat1, short int** &mat2, short int** &result, int size) { //traditional matrix mutliplication with fixed-point data
+  for (int i = 0; i < size; ++i)
+  {
+  	for (int j = 0; j < size; ++j)
+  	{
+  		for (int k = 0; k < size; k++)
+  		{
+        result[i][j] += mat1[i][k] * mat2[k][j];
+      }
+    }
+  }
+}
+```
