@@ -21,7 +21,7 @@ void rand_matrix_flo(float** &input, int size) {
     }
   }}
 
-//traditional matrix mutliplication with fixed-point data
+//traditional matrix multiplication with fixed-point data
 void fix_matrixmult_normal(short int** &mat1, short int** &mat2, short int** &result, int size) {
   for (int i = 0; i < size; ++i)
   {
