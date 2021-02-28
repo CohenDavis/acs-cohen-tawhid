@@ -3,9 +3,38 @@
 #include <vector>
 #include <fstream>
 #include "zlib.h"
-//#include <windows.h>
+#include <string.h>
+#include <stdexcept>
+#include <sstream>
+#include <iomanip>
+#include <time.h>
+#include <iterator>
+#include "zlib.h"
+#include "pthread.h"
 
 #define NUM_BYTES 4096
+struct thread_input_output {
+    std::vector<unsigned char> uncompressed_vec; //uncompressed data for thread
+    std::vector<unsigned char> compressed_vec; //compressed output from thread
+};
+
+void *zlib_compression(void *param) {
+
+  struct thread_input_output *thread_data;
+  thread_data = (struct thread_input_output *)param;
+  std::vector<unsigned char> uncompressed = thread_data->uncompressed_vec;
+  std::vector<unsigned char> compressed;
+
+
+
+  //INSERT COMPRESSION ALGO, PUT IN "compressed" VECTOR//
+
+
+
+  thread_data->compressed_vec = compressed;
+  pthread_exit(NULL);
+}
+
 
 int main(int argc, char** argv){
   std::string input_file;
@@ -16,143 +45,142 @@ int main(int argc, char** argv){
   std::cout << "Input number of worker threads: ";
   std::cin >> num_threads;
 
-  std::ifstream instream(input_file, std::ifstream::binary);
+  pthread_t threads[num_threads];
+  struct thread_input_output thread_data[num_threads];
+  //set attribute allowing threads to be joinable
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+  //set up in/out file streams
+  std::ifstream instream(input_file, std::ios::binary);
   std::ofstream outstream("test_output", std::ofstream::binary);
 
-  std::vector<char> buffer (NUM_BYTES,0); //sets up 4KB buffer
-  while (!instream.eof()) {
-    instream.read(buffer.data(), buffer.size());
-    std::streamsize data_size = instream.gcount();
-    char* output = reinterpret_cast<char*>(buffer.data());
-    outstream.write(output, buffer.size());
+  //reads bytes from file into unsigned char vector
+	std::vector<unsigned char> input_data((std::istreambuf_iterator<char>(instream)), (std::istreambuf_iterator<char>()));
+	//std::cout << input_data.size() << " bytes read" << std::endl;
+
+  long long int begin_read = 0;
+  long long int end_read = NUM_BYTES;
+  bool done_read = false;
+  int error_code = 0;
+  void *status;
+
+  clock_t Time1 = clock();
+  while (!done_read) {
+
+    int active_threads = 0;
+    for(int t=0; t<num_threads; t++){
+
+      //check loop escape conditions
+      if (end_read >= input_data.size()) {
+        //if nothing to read, break
+        if (begin_read >= input_data.size()) {
+          break;
+        }
+        //if one smaller chunk left, set end_read to allow for smaller buffer
+        else {
+          end_read = input_data.size();
+        }
+        done_read = true;
+      }
+      //store chunk of input file data in buffer, copy buffer to thread data
+      std::vector<unsigned char>::iterator it_b = input_data.begin() + begin_read;
+      std::vector<unsigned char>::iterator it_e = input_data.begin() + end_read;
+      std::vector<unsigned char> buffer (it_b, it_e); //sets up 4KB (usually) buffer
+      thread_data[t].uncompressed_vec = buffer;
+
+      //Create threads
+      error_code = pthread_create(&threads[t], &attr, zlib_compression, (void *)&thread_data[t]);
+      if (error_code){
+        printf("ERROR; return code from pthread_create() is %d\n", error_code);
+      }
+
+      active_threads++;
+      begin_read += NUM_BYTES;
+      end_read += NUM_BYTES;
+
+    }
+
+    //wait for threads to finish and rejoin
+    for(int t=0; t<active_threads; t++) {
+      error_code = pthread_join(threads[t], &status);
+      if (error_code) {
+        printf("ERROR; return code from pthread_join() is %d\n", error_code);
+      }
+    }
+
+    //write thread data to output file
+    for(int t=0; t<active_threads; t++) {
+      char* output = reinterpret_cast<char*>(thread_data[t].compressed_vec.data());
+      outstream.write(output, thread_data[t].compressed_vec.size());
+    }
+
   }
-  //char* output = reinterpret_cast<char*>(buffer.data());
-  //outstream.write(output, buffer.size());
+
+  //calculate time taken to complete compression
+  clock_t Time2 = clock();
+  float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC;
+  std::cout << "Compression complete" << std::endl;
+  printf("Time taken for compression is %.7f \n", TotalTimeLoop);
+
+  //close input/output streams
   instream.close();
   outstream.close();
 
-
-return 0;
+  pthread_exit(NULL);
 }
+
+//SCRAP CODE, WILL BE DELETED LATER
 /*
-#include <windows.h>
-#include <tchar.h>
-#include <strsafe.h>
-
-#define MAX_THREADS 3
-#define BUF_SIZE 255
-
-DWORD WINAPI MyThreadFunction( LPVOID lpParam );
-void ErrorHandler(LPTSTR lpszFunction);
-
-// Sample custom data structure for threads to use.
-// This is passed by void pointer so it can be any data type
-// that can be passed using a single void pointer (LPVOID).
-typedef struct MyData {
-    int val1;
-    int val2;
-} MYDATA, *PMYDATA;
-
-
-int _tmain()
-{
-    PMYDATA pDataArray[MAX_THREADS];
-    DWORD   dwThreadIdArray[MAX_THREADS];
-    HANDLE  hThreadArray[MAX_THREADS];
-
-    // Create MAX_THREADS worker threads.
-
-    for( int i=0; i<MAX_THREADS; i++ )
-    {
-        // Allocate memory for thread data.
-
-        pDataArray[i] = (PMYDATA) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY,
-                sizeof(MYDATA));
-
-        if( pDataArray[i] == NULL )
-        {
-           // If the array allocation fails, the system is out of memory
-           // so there is no point in trying to print an error message.
-           // Just terminate execution.
-            ExitProcess(2);
-        }
-
-        // Generate unique data for each thread to work with.
-
-        pDataArray[i]->val1 = i;
-        pDataArray[i]->val2 = i+100;
-
-        // Create the thread to begin execution on its own.
-
-        hThreadArray[i] = CreateThread(
-            NULL,                   // default security attributes
-            0,                      // use default stack size
-            MyThreadFunction,       // thread function name
-            pDataArray[i],          // argument to thread function
-            0,                      // use default creation flags
-            &dwThreadIdArray[i]);   // returns the thread identifier
-
-
-        // Check the return value for success.
-        // If CreateThread fails, terminate execution.
-        // This will automatically clean up threads and memory.
-
-        if (hThreadArray[i] == NULL)
-        {
-           ErrorHandler(TEXT("CreateThread"));
-           ExitProcess(3);
-        }
-    } // End of main thread creation loop.
-
-    // Wait until all threads have terminated.
-
-    WaitForMultipleObjects(MAX_THREADS, hThreadArray, TRUE, INFINITE);
-
-    // Close all thread handles and free memory allocations.
-
-    for(int i=0; i<MAX_THREADS; i++)
-    {
-        CloseHandle(hThreadArray[i]);
-        if(pDataArray[i] != NULL)
-        {
-            HeapFree(GetProcessHeap(), 0, pDataArray[i]);
-            pDataArray[i] = NULL;    // Ensure address is not reused.
-        }
-    }
-
-    return 0;
-}
-
-
-DWORD WINAPI MyThreadFunction( LPVOID lpParam )
-{
-    HANDLE hStdout;
-    PMYDATA pDataArray;
-
-    TCHAR msgBuf[BUF_SIZE];
-    size_t cchStringSize;
-    DWORD dwChars;
-
-    // Make sure there is a console to receive output results.
-
-    hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    if( hStdout == INVALID_HANDLE_VALUE )
-        return 1;
-
-    // Cast the parameter to the correct data type.
-    // The pointer is known to be valid because
-    // it was checked for NULL before the thread was created.
-
-    pDataArray = (PMYDATA)lpParam;
-
-    // Print the parameter values using thread-safe functions.
-
-    StringCchPrintf(msgBuf, BUF_SIZE, TEXT("Parameters = %d, %d\n"),
-        pDataArray->val1, pDataArray->val2);
-    StringCchLength(msgBuf, BUF_SIZE, &cchStringSize);
-    WriteConsole(hStdout, msgBuf, (DWORD)cchStringSize, &dwChars, NULL);
-
-    return 0;
-}
+read data
+    loop
+      create threads
+      do work, join
+      write
+      close threads
+      break if all data read
+      loop again to create more threads
 
 */
+
+
+/*  std::vector<char> test (4096, 'c');
+  //set attribute allowing threads to be joinable
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+  int rc = 0;
+  long t = 0;
+  for(t=0; t<num_threads; t++){
+    rc = pthread_create(&threads[t], &attr, zlib_compression, &test);
+    if (rc){
+      printf("ERROR; return code from pthread_create() is %d\n", rc);
+    }
+  }
+    void *status;
+  for(t=0; t<num_threads; t++){
+    pthread_join(threads[t], &status);
+  } */
+
+
+
+  /*// Stop eating new lines in binary mode!!!
+  instream.unsetf(std::ios::skipws);
+
+  // get its size:
+  std::streampos file_size;
+
+  instream.seekg(0, std::ios::end);
+  file_size = instream.tellg();
+  instream.seekg(0, std::ios::beg);
+
+  // reserve capacity
+  std::vector<unsigned char> input_data;
+  input_data.reserve(file_size);
+
+  // read the data:
+  input_data.insert(input_data.begin(),
+             std::istream_iterator<unsigned char>(instream),
+             std::istream_iterator<unsigned char>());*/
