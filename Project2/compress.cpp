@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <vector>
 #include <fstream>
-#include "zlib.h"
 #include <string.h>
 #include <stdexcept>
 #include <sstream>
@@ -84,10 +83,9 @@ int main(int argc, char** argv){
         }
         done_read = true;
       }
+
       //store chunk of input file data in buffer, copy buffer to thread data
-      std::vector<unsigned char>::iterator it_b = input_data.begin() + begin_read;
-      std::vector<unsigned char>::iterator it_e = input_data.begin() + end_read;
-      std::vector<unsigned char> buffer (it_b, it_e); //sets up 4KB (usually) buffer
+      std::vector<unsigned char> buffer (input_data.begin() + begin_read, input_data.begin() + end_read);
       thread_data[t].uncompressed_vec = buffer;
 
       //Create threads
@@ -96,7 +94,7 @@ int main(int argc, char** argv){
         printf("ERROR; return code from pthread_create() is %d\n", error_code);
       }
 
-      active_threads++;
+      active_threads++; //to keep track of active threads in case not enough data to occupy all desired threads
       begin_read += NUM_BYTES;
       end_read += NUM_BYTES;
 
