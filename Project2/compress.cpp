@@ -17,19 +17,97 @@ struct thread_input_output {
     std::vector<unsigned char> compressed_vec; //compressed output from thread
 };
 
+std::string compress_string(const std::string& str,
+                            int compressionlevel = Z_BEST_COMPRESSION)
+{
+    z_stream zs;                       
+    memset(&zs, 0, sizeof(zs));
+    if (deflateInit(&zs, compressionlevel) != Z_OK)
+        throw(std::runtime_error("deflateInit failed while compressing."));
+
+    zs.next_in = (Bytef*)str.data();
+    zs.avail_in = str.size();           // set the z_stream's input
+    int ret;
+    char outbuffer[80000]; // buffer size is set to 80k bytes
+    std::string outstring;
+    // retrieve the compressed bytes blockwise
+    do {
+        zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
+        zs.avail_out = sizeof(outbuffer);
+
+        ret = deflate(&zs, Z_FINISH);
+
+        if (outstring.size() < zs.total_out) {
+            // append the block to the output string
+            outstring.append(outbuffer,
+                             zs.total_out - outstring.size());
+        }
+    } while (ret == Z_OK);
+
+    deflateEnd(&zs);
+
+    if (ret != Z_STREAM_END) {          
+        std::ostringstream oss;
+        oss << "Exception during zlib compression: (" << ret << ") " << zs.msg;
+        throw(std::runtime_error(oss.str()));
+    }
+
+    return outstring;
+}
+
+
+std::string decompress_string(const std::string& str)
+{
+    z_stream zs;                        
+    memset(&zs, 0, sizeof(zs));
+
+    if (inflateInit(&zs) != Z_OK)
+        throw(std::runtime_error("inflateInit failed while decompressing."));
+
+    zs.next_in = (Bytef*)str.data();
+    zs.avail_in = str.size();
+
+    int ret;
+    char outbuffer[80000];
+    std::string outstring;
+
+ 
+    do {
+        zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
+        zs.avail_out = sizeof(outbuffer);
+
+        ret = inflate(&zs, 0);
+
+        if (outstring.size() < zs.total_out) {
+            outstring.append(outbuffer,
+                             zs.total_out - outstring.size());
+        }
+
+    } while (ret == Z_OK);
+
+    inflateEnd(&zs);
+
+    if (ret != Z_STREAM_END) {          
+        std::ostringstream oss;
+        oss << "Exception during zlib decompression: (" << ret << ") "
+            << zs.msg;
+        throw(std::runtime_error(oss.str()));
+    }
+
+    return outstring;
+}
+
 void *zlib_compression(void *param) {
 
   struct thread_input_output *thread_data;
   thread_data = (struct thread_input_output *)param;
   std::vector<unsigned char> uncompressed = thread_data->uncompressed_vec;
   std::vector<unsigned char> compressed;
-
-
-
-  //INSERT COMPRESSION ALGO, PUT IN "compressed" VECTOR//
-
-
-
+  std::string temp_uncompressed(uncompressed.begin(), uncompressed.end());
+  std::string temp_compressed = compress_string(temp_uncompressed);
+  for (int i= 0 ;i< temp_compressed.size(); ++i) {
+           compressed.push_back(temp_compressed[i]);
+  }
   thread_data->compressed_vec = compressed;
   pthread_exit(NULL);
 }
