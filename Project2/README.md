@@ -4,13 +4,13 @@ Course Mini-Project #2: Programming with Multiple Threads
 
 Install zlib library using this instructions: https://www.systutorials.com/how-to-install-the-zlib-library-in-ubuntu/#note-about-linking-cc-programs-with-zlib
 
-run zlib_compression.cpp with this command where ex.txt is input text file:
+Run zlib_compression.cpp with this command where ex.txt is input text file:
 
 ```
 g++ -g zlib_compression.cpp -lz -o x && ./x "ex.txt"
 ```
 
-run compression.cpp with this command:
+Run compression.cpp with this command:
 
 ```
 g++ -g compression.cpp -lz -o compression.out && ./compression.out
@@ -66,4 +66,4 @@ do {
 deflateEnd(&zs);
 ```
 
-It will first take the input string str and set it as input for z_stream object zs. It will then deflate the object byte by byte and record the output into outbuffer. This function can only compress blocks of data one at a time so that the compressed block is maximum of 80k bytes. 
+It will first take the input string str and set it as input for z_stream object zs. It will then deflate the object byte by byte and record the output into outbuffer. This function can only compress blocks of data one at a time so that the compressed block is maximum of 80k bytes. The decompression process is nearly identical as the compression process except the z_stream object will be inflated instead of being deflated.
