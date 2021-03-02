@@ -6,12 +6,15 @@ Install zlib library using this instructions: https://www.systutorials.com/how-t
 
 run zlib_compression.cpp with this command where ex.txt is input text file:
 
-``g++ -g zlib_compression.cpp -lz -o x && ./x "ex.txt"
-``
+```
+g++ -g zlib_compression.cpp -lz -o x && ./x "ex.txt"
+```
+
 run compression.cpp with this command:
 
-``g++ -g compression.cpp -lz -o compression.out && ./compression.out
-``
+```
+g++ -g compression.cpp -lz -o compression.out && ./compression.out
+```
 The code will then ask the user for two inputs. It will ask the user for name of a file they would like to compress and then the number of worker threads they would like to use. 
 
 After the inputs are taken in, the code will compress the input file using the zlib library, wait for threads to rejoin, then output the compressed file. 
