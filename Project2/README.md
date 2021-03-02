@@ -4,7 +4,7 @@ Course Mini-Project #2: Programming with Multiple Threads
 
 This program is designed to run in a Linux environment, using pthreads for multithreading functionality. An Ubuntu bash terminal in Windows can also be used.
 
-Install zlib library using this instructions: https://www.systutorials.com/how-to-install-the-zlib-library-in-ubuntu/#note-about-linking-cc-programs-with-zlib
+Install zlib library using these instructions: https://www.systutorials.com/how-to-install-the-zlib-library-in-ubuntu/#note-about-linking-cc-programs-with-zlib
 
 If not already installed, install the pthread library with:
 ```
