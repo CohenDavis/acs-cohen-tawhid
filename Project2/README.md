@@ -4,13 +4,13 @@ Course Mini-Project #2: Programming with Multiple Threads
 
 Install zlib library using this instructions: https://www.systutorials.com/how-to-install-the-zlib-library-in-ubuntu/#note-about-linking-cc-programs-with-zlib
 
-Run zlib_compression.cpp with this command where ex.txt is input text file:
+zlib_compression.cpp will compress then decompress a text file and output the results. Run zlib_compression.cpp with this command where ex.txt is input text file:
 
 ```
 g++ -g zlib_compression.cpp -lz -o x && ./x "ex.txt"
 ```
 
-Run compression.cpp with this command:
+Compression.cpp will use multithreaded programming to compress a file using number of worker threads specified by user input. Run compression.cpp with this command:
 
 ```
 g++ -g compression.cpp -lz -o compression.out && ./compression.out
