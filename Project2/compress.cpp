@@ -12,15 +12,16 @@
 #include "pthread.h"
 
 #define NUM_BYTES 4096
-struct thread_input_output {
+struct thread_input_output { //thread data storage mechanism
     std::vector<unsigned char> uncompressed_vec; //uncompressed data for thread
     std::vector<unsigned char> compressed_vec; //compressed output from thread
 };
 
+//compression helper function called by zlib_compression function
 std::string compress_string(const std::string& str,
                             int compressionlevel = Z_BEST_COMPRESSION)
 {
-    z_stream zs;                       
+    z_stream zs;
     memset(&zs, 0, sizeof(zs));
     if (deflateInit(&zs, compressionlevel) != Z_OK)
         throw(std::runtime_error("deflateInit failed while compressing."));
@@ -46,7 +47,7 @@ std::string compress_string(const std::string& str,
 
     deflateEnd(&zs);
 
-    if (ret != Z_STREAM_END) {          
+    if (ret != Z_STREAM_END) {
         std::ostringstream oss;
         oss << "Exception during zlib compression: (" << ret << ") " << zs.msg;
         throw(std::runtime_error(oss.str()));
@@ -55,10 +56,10 @@ std::string compress_string(const std::string& str,
     return outstring;
 }
 
-
+//decompression function used for debugging - never called in code
 std::string decompress_string(const std::string& str)
 {
-    z_stream zs;                        
+    z_stream zs;
     memset(&zs, 0, sizeof(zs));
 
     if (inflateInit(&zs) != Z_OK)
@@ -71,7 +72,7 @@ std::string decompress_string(const std::string& str)
     char outbuffer[80000];
     std::string outstring;
 
- 
+
     do {
         zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
         zs.avail_out = sizeof(outbuffer);
@@ -87,7 +88,7 @@ std::string decompress_string(const std::string& str)
 
     inflateEnd(&zs);
 
-    if (ret != Z_STREAM_END) {          
+    if (ret != Z_STREAM_END) {
         std::ostringstream oss;
         oss << "Exception during zlib decompression: (" << ret << ") "
             << zs.msg;
@@ -97,6 +98,7 @@ std::string decompress_string(const std::string& str)
     return outstring;
 }
 
+//function called by threads to perform compression
 void *zlib_compression(void *param) {
 
   struct thread_input_output *thread_data;
@@ -112,11 +114,12 @@ void *zlib_compression(void *param) {
   pthread_exit(NULL);
 }
 
-
+//main function serves as task delegation thread
 int main(int argc, char** argv){
   std::string input_file;
   int num_threads;
 
+  //get user inputs/preferences
   std::cout << "Input name of file to be compressed (ensure in same directory as this compression program): ";
   std::cin >> input_file;
   std::cout << "Input number of worker threads: ";
@@ -131,11 +134,10 @@ int main(int argc, char** argv){
 
   //set up in/out file streams
   std::ifstream instream(input_file, std::ios::binary);
-  std::ofstream outstream("test_output", std::ofstream::binary);
+  std::ofstream outstream("output_file", std::ofstream::binary);
 
   //reads bytes from file into unsigned char vector
 	std::vector<unsigned char> input_data((std::istreambuf_iterator<char>(instream)), (std::istreambuf_iterator<char>()));
-	//std::cout << input_data.size() << " bytes read" << std::endl;
 
   long long int begin_read = 0;
   long long int end_read = NUM_BYTES;
@@ -144,7 +146,7 @@ int main(int argc, char** argv){
   void *status;
 
   clock_t Time1 = clock();
-  while (!done_read) {
+  while (!done_read) { //continue looping through, creating num_threads threads at a time while uncompressed data remains
 
     int active_threads = 0;
     for(int t=0; t<num_threads; t++){
@@ -178,7 +180,7 @@ int main(int argc, char** argv){
 
     }
 
-    //wait for threads to finish and rejoin
+    //rejoin threads once they complete compression task on 4KB chunk
     for(int t=0; t<active_threads; t++) {
       error_code = pthread_join(threads[t], &status);
       if (error_code) {
@@ -206,57 +208,3 @@ int main(int argc, char** argv){
 
   pthread_exit(NULL);
 }
-
-//SCRAP CODE, WILL BE DELETED LATER
-/*
-read data
-    loop
-      create threads
-      do work, join
-      write
-      close threads
-      break if all data read
-      loop again to create more threads
-
-*/
-
-
-/*  std::vector<char> test (4096, 'c');
-  //set attribute allowing threads to be joinable
-  pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-  int rc = 0;
-  long t = 0;
-  for(t=0; t<num_threads; t++){
-    rc = pthread_create(&threads[t], &attr, zlib_compression, &test);
-    if (rc){
-      printf("ERROR; return code from pthread_create() is %d\n", rc);
-    }
-  }
-    void *status;
-  for(t=0; t<num_threads; t++){
-    pthread_join(threads[t], &status);
-  } */
-
-
-
-  /*// Stop eating new lines in binary mode!!!
-  instream.unsetf(std::ios::skipws);
-
-  // get its size:
-  std::streampos file_size;
-
-  instream.seekg(0, std::ios::end);
-  file_size = instream.tellg();
-  instream.seekg(0, std::ios::beg);
-
-  // reserve capacity
-  std::vector<unsigned char> input_data;
-  input_data.reserve(file_size);
-
-  // read the data:
-  input_data.insert(input_data.begin(),
-             std::istream_iterator<unsigned char>(instream),
-             std::istream_iterator<unsigned char>());*/

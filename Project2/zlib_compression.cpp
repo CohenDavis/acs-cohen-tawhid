@@ -1,3 +1,10 @@
+/*//////////////////////////////////////////////////////////////////////////////////////////////////
+
+THIS IS A TESTING FILE - DO NOT USE - THE ONLY FILE NEEDED TO EXECUTE (ASIDE FROM AN INPUT TO
+BE COMPRESSED) IS COMPRESS.CPP
+
+/////////////////////////////////////////////////////////////////////////////////////////////////*/
+
 #include <string.h>
 #include <fstream>
 #include <stdexcept>
@@ -10,7 +17,7 @@
 std::string compress_string(const std::string& str,
                             int compressionlevel = Z_BEST_COMPRESSION)
 {
-    z_stream zs;                       
+    z_stream zs;
     memset(&zs, 0, sizeof(zs));
     if (deflateInit(&zs, compressionlevel) != Z_OK)
         throw(std::runtime_error("deflateInit failed while compressing."));
@@ -36,7 +43,7 @@ std::string compress_string(const std::string& str,
 
     deflateEnd(&zs);
 
-    if (ret != Z_STREAM_END) {          
+    if (ret != Z_STREAM_END) {
         std::ostringstream oss;
         oss << "Exception during zlib compression: (" << ret << ") " << zs.msg;
         throw(std::runtime_error(oss.str()));
@@ -48,7 +55,7 @@ std::string compress_string(const std::string& str,
 
 std::string decompress_string(const std::string& str)
 {
-    z_stream zs;                        
+    z_stream zs;
     memset(&zs, 0, sizeof(zs));
 
     if (inflateInit(&zs) != Z_OK)
@@ -61,7 +68,7 @@ std::string decompress_string(const std::string& str)
     char outbuffer[80000];
     std::string outstring;
 
- 
+
     do {
         zs.next_out = reinterpret_cast<Bytef*>(outbuffer);
         zs.avail_out = sizeof(outbuffer);
@@ -77,7 +84,7 @@ std::string decompress_string(const std::string& str)
 
     inflateEnd(&zs);
 
-    if (ret != Z_STREAM_END) {          
+    if (ret != Z_STREAM_END) {
         std::ostringstream oss;
         oss << "Exception during zlib decompression: (" << ret << ") "
             << zs.msg;
@@ -97,7 +104,7 @@ int main(int argc, char* argv[])
       ss << f.rdbuf(); // reading data into input string using ostringstream buffer
       input = ss.str();
     }
-   
+
     std::string cstr = compress_string(input); // compress input into cstr
     std::cout << "Compressing data from: "
               << input.size() << " bytes -> " << cstr.size()
