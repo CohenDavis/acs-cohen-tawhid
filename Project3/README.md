@@ -250,9 +250,9 @@ Inject Delay | Latency (ns) | Bandwidth (MB/s)
 09000 | 66.10 | 1533.1
 20000 | 66.39 | 1218.6
 
-![Graph](Bandwidth vs Latency - 64B.PNG)
+![Graph](https://github.com/CohenDavis/acs-cohen-tawhid/blob/master/Project3/Bandwidth%20vs%20Latency%20-%2064B.PNG)
 
-![Graph](Bandwidth vs Latency - 256B.PNG)
+![Graph](https://github.com/CohenDavis/acs-cohen-tawhid/blob/master/Project3/Bandwidth%20vs%20Latency%20-%20256B.PNG)
 
 # Analysis 
 
