@@ -11,7 +11,7 @@ Dell XPS-9560:
 * i7-7700HQ (4C/8T, 2.80GHz Base/3.80GHz Boost)
 * GTX 1050 (2GB GDDR5)
 * 16GB RAM
-* 512 GB NVMe SSD
+* 512 GB NVMe SSD (Samsung PM961)
 * Windows 10 64-bit
 
 ### Memory & Cache Data
@@ -177,7 +177,6 @@ Inject Delay | Latency (ns) | Bandwidth (MB/s)
 05000 | 65.50 | 1008.9
 09000 | 65.86 | 989.5
 20000 | 65.66 | 982.8
-
 
 #### Loaded Latency Test - 256B Access Size, 3:1 R:W
 Inject Delay | Latency (ns) | Bandwidth (MB/s)
