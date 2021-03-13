@@ -255,7 +255,7 @@ Inject Delay | Latency (ns) | Bandwidth (MB/s)
 
 ### Storage
 
-### Direct is set to 1
+### Direct is set to 1 and uses 2GB test file
 
 #### Loaded Latency Test - 4KB Access Size, Read-Only
 IO Depth | Latency (micro second) | Bandwidth (KB/s)
@@ -292,6 +292,18 @@ IO Depth | Latency (micro second) | Bandwidth (KB/s)
 01024 | 100830 | 17925
 
 IOPS for highest bandwidth - 5411
+
+#### Loaded Latency Test - 32KB Access Size, Read-Only
+IO Depth | Latency (micro second) | Bandwidth (KB/s)
+------------ | ------------- | -------------
+00001 | 222.11 | 139438
+00008 | 512.08 | 493331
+00064 | 3684.70| 550433
+00256 | 14643.45 | 546133
+00512 | 30070 | 525865
+01024 | 67580 | 458193
+
+IOPS for highest bandwidth - 17201
 # Analysis 
 
 
