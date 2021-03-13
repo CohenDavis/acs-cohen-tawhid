@@ -253,6 +253,19 @@ Inject Delay | Latency (ns) | Bandwidth (MB/s)
 
 ![Graph](https://github.com/CohenDavis/acs-cohen-tawhid/blob/master/Project3/Bandwidth%20vs%20Latency%20-%20256B.PNG)
 
+### Storage
+
+#### Loaded Latency Test - 4KB Access Size, Read-Only
+IO Depth | Latency (s) | Bandwidth (KB/s)
+------------ | ------------- | -------------
+00001 | 106.701 | 19654
+00008 | 22.799 | 91984
+00064 | 20.985| 99935
+00256 | 21.284 | 98531
+00512 | 22.363 | 93777
+01024 | 32.018 | 65499
+
+
 # Analysis 
 
 # Conclusions
