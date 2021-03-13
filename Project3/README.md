@@ -278,7 +278,21 @@ IO Depth | Latency (micro second) | Bandwidth (KB/s)
 00256 | 26808.26 | 32681
 00512 | 63170 | 28799
 01024 | 127720 | 28201
-# Analysis 
 
 IOPS for highest bandwidth - 8170
+
+#### Loaded Latency Test - 4KB Access Size, Read and Write
+IO Depth | Latency (micro second) | Bandwidth (KB/s)
+------------ | ------------- | -------------
+00001 | 193.28 | 7521
+00008 | 675.62 | 18981
+00064 | 5199.64| 21644
+00256 | 23259.84 | 18764
+00512 | 41940 | 20825
+01024 | 100830 | 17925
+
+IOPS for highest bandwidth - 5411
+# Analysis 
+
+
 # Conclusions
