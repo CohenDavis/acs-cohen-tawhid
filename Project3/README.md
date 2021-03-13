@@ -2,6 +2,22 @@ Course Mini-Project #3: Memory and Storage Performance Profiling
 
 # Overview
 
+In this project we will try to observe the trade-off between latency and throughput in both memory/cacche and storage systems of a computer. We will try to observe how increasing data access queue depth will result in increased memory/storage utilization, higher throughput, and higher bandwidth while the latency for each request will take longer time. 
+
+For the experiments regarding memory and cache, we will be using Intel Memory Latency Checker to determine the latency in nenoseconds and bandwidth in MB per second for various access sizes and operation types. We will test read only, write only, and read+write operations with various read and write ratios. We will be using 64 byte and 256 byte data access sizes in our experiment. 
+
+For storage experiment, we will first install the Flexible IO Tester (FIO) for Linux using the following command:
+
+```
+sudo apt-get install fio
+```
+
+Using FIO, we will then conduct similar experiments as the memory experiment. We will then determine the latency in microseconds and bandwidth in KB per second for read only, write only, and read+write operations. We will be using the 4KB and 32KB data access size and set direct to 1 in order to use non-buffered I/O. In order to test using FIO we will run a command similar to this one below:
+
+```
+fio --name=random --ioengine=posixaio --rw=randrw --bs=32k --numjobs=1 --size=2g --iodepth=1024 --time_based --end_fsync=1 --direct=1
+```
+This command is telling fio to create a file named random and perform random read and write operations given by the "--rw=randw" tag. This random file will be 2GB in size and it will be accesed in 32KB access size. Finally the iodepth will be set to 1024. 
 
 # Testing
 
