@@ -255,15 +255,17 @@ Inject Delay | Latency (ns) | Bandwidth (MB/s)
 
 ### Storage
 
+### Direct is set to 1
+
 #### Loaded Latency Test - 4KB Access Size, Read-Only
-IO Depth | Latency (s) | Bandwidth (KB/s)
+IO Depth | Latency (micro second) | Bandwidth (KB/s)
 ------------ | ------------- | -------------
-00001 | 106.701 | 19654
-00008 | 22.799 | 91984
-00064 | 20.985| 99935
-00256 | 21.284 | 98531
-00512 | 22.363 | 93777
-01024 | 32.018 | 65499
+00001 | 102197 | 20520
+00008 | 26344 | 79606
+00064 | 20828| 100727
+00256 | 19922 | 105268
+00512 | 23608 | 88832
+01024 | 30918 | 67829
 
 
 # Analysis 
