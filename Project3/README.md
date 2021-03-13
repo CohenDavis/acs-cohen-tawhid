@@ -2,9 +2,9 @@ Course Mini-Project #3: Memory and Storage Performance Profiling
 
 # Overview
 
-In this project we will try to observe the trade-off between latency and throughput in both memory/cacche and storage systems of a computer. We will try to observe how increasing data access queue depth will result in increased memory/storage utilization, higher throughput, and higher bandwidth while the latency for each request will take longer time. 
+In this project we will try to observe the trade-off between latency and throughput in both memory/cache and storage systems of a computer. We will try to observe how increasing data access queue depth will result in increased memory/storage utilization, higher throughput, and higher bandwidth while the latency for each request will take longer time. 
 
-For the experiments regarding memory and cache, we will be using Intel Memory Latency Checker to determine the latency in nenoseconds and bandwidth in MB per second for various access sizes and operation types. We will test read only, write only, and read+write operations with various read and write ratios. We will be using 64 byte and 256 byte data access sizes in our experiment. 
+For the experiments regarding memory and cache, we will be using Intel Memory Latency Checker (in a Windows environment) to determine the latency in nanoseconds and bandwidth in MB per second for various access sizes and operation types. We will test read only, write only, and read+write operations with various read and write ratios. We will be using 64 byte and 256 byte data access sizes in our experiment. 
 
 For storage experiment, we will first install the Flexible IO Tester (FIO) for Linux using the following command:
 
@@ -217,7 +217,6 @@ Inject Delay | Latency (ns) | Bandwidth (MB/s)
 09000 | 67.60 | 1514.6
 20000 | 64.77 | 1245.7
 
-
 #### Loaded Latency Test - 256B Access Size, 2:1 R:W
 Inject Delay | Latency (ns) | Bandwidth (MB/s)
 ------------ | ------------- | -------------
@@ -240,7 +239,6 @@ Inject Delay | Latency (ns) | Bandwidth (MB/s)
 05000 | 71.28 | 1632.5
 09000 | 73.94 | 1276.8
 20000 | 74.32 | 1045.4
-
 
 #### Loaded Latency Test - 256B Access Size, 1:1 R:W
 Inject Delay | Latency (ns) | Bandwidth (MB/s)
@@ -271,81 +269,92 @@ Inject Delay | Latency (ns) | Bandwidth (MB/s)
 
 ### Storage
 
-### Direct is set to 1 and uses 2GB test file
+#### Direct is set to 1 and uses 2GB test file
+* Note - Storage tests with a raw drive (no file system installed) were not performed due to lack of availability
 
-#### Loaded Latency Test - 4KB Access Size, Read-Only
+#### 4KB Access Size, Read-Only
 IO Depth | Latency (micro second) | Bandwidth (KB/s)
 ------------ | ------------- | -------------
 00001 | 188.19 | 20520
 00008 | 394.66 | 79606
 00064 | 2500.35| 100727
 00256 | 9371.98 | 105268
-00512 | 21930 | 88832
-01024 | 57630 | 67829
+00512 | 21930.00 | 88832
+01024 | 57630.00 | 67829
 
 IOPS for highest bandwidth - 26317
 
-#### Loaded Latency Test - 4KB Access Size, Write-Only
+#### 4KB Access Size, Write-Only
 IO Depth | Latency (micro second) | Bandwidth (KB/s)
 ------------ | ------------- | -------------
 00001 | 284.65 | 13481
 00008 | 906.90 | 30918
 00064 | 6808.18| 32373
 00256 | 26808.26 | 32681
-00512 | 63170 | 28799
-01024 | 127720 | 28201
+00512 | 63170.00 | 28799
+01024 | 127720.00 | 28201
 
 IOPS for highest bandwidth - 8170
 
-#### Loaded Latency Test - 4KB Access Size, Read and Write
+#### 4KB Access Size, Read and Write
 IO Depth | Latency (micro second) | Bandwidth (KB/s)
 ------------ | ------------- | -------------
 00001 | 193.28 | 7521
 00008 | 675.62 | 18981
 00064 | 5199.64| 21644
 00256 | 23259.84 | 18764
-00512 | 41940 | 20825
-01024 | 100830 | 17925
+00512 | 41940.00 | 20825
+01024 | 100830.00 | 17925
 
 IOPS for highest bandwidth - 5411
 
-#### Loaded Latency Test - 32KB Access Size, Read-Only
+#### 32KB Access Size, Read-Only
 IO Depth | Latency (micro second) | Bandwidth (KB/s)
 ------------ | ------------- | -------------
 00001 | 222.11 | 139438
 00008 | 512.08 | 493331
 00064 | 3684.70| 550433
 00256 | 14643.45 | 546133
-00512 | 30070 | 525865
-01024 | 67580 | 458193
+00512 | 30070.00 | 525865
+01024 | 67580.00 | 458193
 
 IOPS for highest bandwidth - 17201
 
-#### Loaded Latency Test - 32KB Access Size, Write-Only
+#### 32KB Access Size, Write-Only
 IO Depth | Latency (micro second) | Bandwidth (KB/s)
 ------------ | ------------- | -------------
 00001 | 338.12 | 84658
 00008 | 1164.24 | 173218
 00064 | 9185.24| 171574
-00256 | 33590 | 195120
-00512 | 71580 | 184365
-01024 | 136570 | 176527
+00256 | 33590.00 | 195120
+00512 | 71580.00 | 184365
+01024 | 136570.00 | 176527
 
 IOPS for highest bandwidth - 6097
 
-#### Loaded Latency Test - 32KB Access Size, Read and Write
+#### 32KB Access Size, Read and Write
 IO Depth | Latency (micro second) | Bandwidth (KB/s)
 ------------ | ------------- | -------------
 00001 | 245.76 | 47144
 00008 | 666.26 | 128175
 00064 | 5317.41 | 134601
 00256 | 22801.72 | 127739
-00512 | 43300 | 133319
-01024 | 94220 | 119320
+00512 | 43300.00 | 133319
+01024 | 94220.00 | 119320
 
 IOPS for highest bandwidth - 4206
 
-# Analysis 
+# Analysis & Conclusions
+
+As anticipated, within each test, increases in bandwidth/throughput saw corresponding increases in latency, while decreases in latency saw corresponding decreases in bandwidth. For the 64B data access size tests, the lowest latencies were seen for the read-only operations; while some other tests saw lower minimum latencies, the read-only test saw the lowest average latency across all delay values, being 87.81 ns. Meanwhile, though the write-only test saw similar peaks in bandwidth nearing 30 GB/s, these were achieved at a much higher latency in the 400 ns range. Looking at the “mixed” tests with the varied read-write ratios, their associated bandwidths and latencies sit between those of the read-only and write-only tests, as one might anticipate. The 3:1 and 2:1 read-to-write ratio tests perform a bit closer to the read-only test, having somewhat lower peak latencies in the 200-250 ns range. The 1:1 ratio test, however, performed more similarly to the write-only test, having those much higher peak latencies, albeit at a lower bandwidth. It is worthy of note that all three of the mixed read/write tests (3:1, 2:1, 1:1) saw lower peak bandwidths than the read-only and write-only tests, with all three clustering around 25 GB/s.
+  
+For the 256B data access size tests, all tests generally saw lower latencies and bandwidths than their 64B counterparts. The lowest average latency was again seen with the read-only test, at 76.45 ns. Meanwhile, the write-only test again yielded the highest latency, with a peak around 350 ns. However, this latency comes with a much lower bandwidth for the 256B test, topping out at around 7.5 GB/s (versus almost 30 GB/s for the 64B version). The mixed read/write tests once again sat between the read-only and write-only results. Peak bandwidths for 3:1, 2:1, and 1:1, all sat in the 20-25 GB/s range (again, a bit lower than the 64B equivalents), with the 1:1 test actually showing the highest peak bandwidth. Peak latencies for 3:1 and 2:1 (150-200 ns range) skewed more closely to the read-only results, while the peak latencies for 1:1 skewed a bit higher (around 275 ns), ending up closer to the write-only results than the other mixed tests. 
+
+Looking at the storage tests performed, the trend of higher bandwidths corresponding to higher latencies continues for the most part. And as expected, latencies are higher and bandwidths/throughputs are lower for the SSD when compared to the memory (microseconds and kB/s for SSD versus nanoseconds and MB/s for memory). In regards to the 4 kB data access size tests, like with memory, the read-only tests were found to show the lowest latency compared to the write-only and mixed tests. The read-only tests also reach the highest peak bandwidth for the 4 kB tests, when the IO depth is increased to 256 (yielding 105 MB/s). Up through that IO depth of 256, the bandwidth rises with increased depth, and latency increases accordingly. However, after increasing the depth past 256, latency continues to increase while bandwidth dips back down below its peak. This same general pattern of the bandwidth flatlining or dipping back down after a certain IO depth persisted for the write-only and mixed 4kB tests. Looking more at the mixed tests, while mixed read/write ratios during memory testing typically yielded performance between or very close to read-only and write-only, the 4kB mixed tests for storage yielded the lowest bandwidth results between read-only, write-only, and read-write (mixed). With the mixed latencies (193 us - 100 ms), while not the highest of the three sets of tests on average, they were not too much lower than write-only’s latencies (284 us - 128 ms).
+
+As far as the 32kB data access size tests, though latencies remained relatively similar to the 4 kB tests, increasing in some places and decreasing in others, bandwidths significantly improved relative to the smaller block size. With the 32 kB read-only tests for example, which once again demonstrate the lowest latencies between the three sets, bandwidths reach over 550 MB/s (versus 105 MB/s for 4 kB). Once again, though the write-only tests show the highest latency, the mixed tests were not too far behind, though the mixed tests did show a lower peak latency here than they did for the 4kB tests. And although the bandwidths associated with the mixed tests did improve with the 32 kB block size, now regularly reaching over 100 Mb/s, they still yielded the lowest bandwidths of the group when compared to read-only and write-only.
+
+As listed in the data section, the storage testing showed the 4kB read-only IOPS and the 4kB write-only IOPS for the test system’s SSD to be 26.3k and 8.2k, respectively. Compared to the Intel D7-P5600’s 400k (read) and 118k (write), the Samsung SSD tested is certainly the inferior performer. This is expected, however, given that the D7-P5600 is a high performance enterprise-class product, whereas the Samsung SSD is a consumer part used in mass-produced laptops. Overall, this memory/cache and storage performance profiling went mostly as expected. The tradeoff between bandwidth and latency was quite visible in both memory and storage testing, and the performance deltas caused by different read/write operations and varying data access sizes were regularly apparent. Unfortunately the group was not able to test with a raw storage device (no file system installed) due to lack of hardware availability, but this would serve as an interesting jumping-off point for future study on the subject.
 
 
-# Conclusions
+
