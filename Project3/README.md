@@ -304,6 +304,31 @@ IO Depth | Latency (micro second) | Bandwidth (KB/s)
 01024 | 67580 | 458193
 
 IOPS for highest bandwidth - 17201
+
+#### Loaded Latency Test - 32KB Access Size, Write-Only
+IO Depth | Latency (micro second) | Bandwidth (KB/s)
+------------ | ------------- | -------------
+00001 | 338.12 | 84658
+00008 | 1164.24 | 173218
+00064 | 9185.24| 171574
+00256 | 33590 | 195120
+00512 | 71580 | 184365
+01024 | 136570 | 176527
+
+IOPS for highest bandwidth - 6097
+
+#### Loaded Latency Test - 32KB Access Size, Read and Write
+IO Depth | Latency (micro second) | Bandwidth (KB/s)
+------------ | ------------- | -------------
+00001 | 245.76 | 47144
+00008 | 666.26 | 128175
+00064 | 5317.41 | 134601
+00256 | 22801.72 | 127739
+00512 | 43300 | 133319
+01024 | 94220 | 119320
+
+IOPS for highest bandwidth - 4206
+
 # Analysis 
 
 
