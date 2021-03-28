@@ -30,7 +30,7 @@ void dict_gen_from_raw(std::ifstream& raw_data, DICT_TYPE& dictionary) {
 
 }
 
-//Writes dictionary and encoded data to file
+//Writes dictionary and encoded data to file "encoded_file"
 void output_encoded(std::ifstream& raw_data, DICT_TYPE& dictionary) {
   std::ofstream outstream("encoded_file");
   DICT_TYPE::iterator it;
@@ -59,8 +59,8 @@ void output_encoded(std::ifstream& raw_data, DICT_TYPE& dictionary) {
 }
 
 //Generates/populates dictionary based on dictonary data from encoded file
-void dict_gen_from_encoded(std::ifstream& encoded_data, DICT_TYPE& dictionary) {
-  std::string line
+void dict_gen_from_encoded(std::ifstream& encoded_data, DICT_TYPE& dictionary, std::map<long long int, std::string>& dict_supp) {
+  std::string line;
 
   while (!encoded_data.eof()) {
     std::getline(encoded_data, line);
@@ -71,26 +71,55 @@ void dict_gen_from_encoded(std::ifstream& encoded_data, DICT_TYPE& dictionary) {
     }
     else {
       //process line from encoded file, add data to dictionary
+      std::size_t pos = 0;
       std::size_t space_check = line.find(' '); //find first space
-      std::string word substr(size_t pos = 0, space_check); //get raw "word"
-      std::string remaining substr(space_check + 1); //get rest of line after word
+      std::string word = line.substr(pos, space_check); //get raw "word"
+      std::string remaining = line.substr(space_check + 1); //get rest of line after word
       space_check = remaining.find(' '); //find next space
-      long long int first_loc = stoi(substr(size_t pos = 0, space_check)); //get location string, convert to int
-      long long int num_occur = stoi(substr(space_check + 1)); //get frquency string, convert to int
+      long long int first_loc = stoi(remaining.substr(pos, space_check)); //get location string, convert to int
+      long long int num_occur = stoi(remaining.substr(space_check + 1)); //get frquency string, convert to int
 
       dictionary.insert(std::make_pair(word, std::make_pair(first_loc, num_occur)));
+      dict_supp.insert(std::make_pair(first_loc, word));
     }
   }
 
 }
 
+//Writes decoded data to file "decoded_file"
+void output_decoded(std::ifstream& encoded_data, std::map<long long int, std::string>& dict_supp) {
+  std::ofstream outstream("decoded_file");
+  std::map<long long int, std::string>::iterator it;
+  std::string line;
+
+  //navigate to encoded data part of file
+  while (!encoded_data.eof()) {
+    std::getline(encoded_data, line);
+    std::size_t end_check = line.find(';');
+    //look for delimiting semicolon (indicating end of dictionary data)
+    if (end_check == std::string::npos) {
+      continue;
+    }
+    else {
+      break;
+    }
+  }
+  //perform decoding on encoded data in file
+  long long int code;
+  while (encoded_data >> code) {
+    it = dict_supp.find(code);
+    outstream << it -> second << std::endl;
+  }
+  outstream.close();
+
+}
 
 int main(int argc, char** argv){
   char mode;
   std::string input_file;
   std::string input_item;
 
-  std::cout << "Would you like to Encode (E), or Query (Q)?: ";
+  std::cout << "Would you like to Encode (E), or Query (Q)?, or Decode (D): ";
   std::cin >> mode;
 
   if (mode == 'E' || mode == 'e'){
@@ -103,6 +132,10 @@ int main(int argc, char** argv){
     std::cout << "Enter the data item (string) you'd like to search for: ";
     std::cin >> input_item;
   }
+  else if (mode == 'D' || mode == 'd'){
+    std::cout << "Enter the name of your encoded file: ";
+    std::cin >> input_file;
+  }
   else {
       std::cout << "Command Error" << std::endl;
       return 0;
@@ -110,28 +143,51 @@ int main(int argc, char** argv){
 
   std::ifstream instream(input_file);
   DICT_TYPE dictionary;
-  if (mode == 'E' || mode == 'e'){
+  std::map<long long int, std::string> dict_supp;
+
+  if (mode == 'E' || mode == 'e'){ //encoding functionality
+
+    clock_t Time1 = clock();
     dict_gen_from_raw(instream, dictionary);
     instream.close();
     std::ifstream instream(input_file);
     output_encoded(instream, dictionary);
+    clock_t Time2 = clock();
     std::cout << "Encoded file generated" << std::endl;
+    float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC; //calculate time taken to complete encoding
+    printf("Time taken to complete encoding is %.7f \n", TotalTimeLoop);
+
   }
-  else {
-    dict_gen_from_encoded(instream, dictionary);
+  else if (mode == 'Q' || mode == 'q'){ //querying functionality
+
+    clock_t Time1 = clock();
+    dict_gen_from_encoded(instream, dictionary, dict_supp);
     instream.close();
+    DICT_TYPE::iterator it = dictionary.find(input_item);
+    if (it == dictionary.end()) {
+      std::cout << "The item you entered is not in the provided file" << std::endl;
+    }
+    else {
+      std::cout << it -> first << " occurs " << it -> second.second << " times in the provided file" << std::endl;
+    }
+    clock_t Time2 = clock();
+    float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC; //calculate time taken to complete query
+    printf("Time taken to complete query is %.7f \n", TotalTimeLoop);
 
-    //Need to add actual query after dictionary generation - still need to test dict_gen_from_encoded
-    //Should add decoding function - map(first loc, word) would be useful - need to add to dict_gen_from_encoded
-    //SIMD stuff anywhere?
+  }
+  else { //decoding functionality
 
+    clock_t Time1 = clock();
+    dict_gen_from_encoded(instream, dictionary, dict_supp);
+    instream.close();
+    std::ifstream instream(input_file);
+    output_decoded(instream, dict_supp);
+    clock_t Time2 = clock();
+    std::cout << "Decoded file generated" << std::endl;
+    float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC; //calculate time taken to complete decoding
+    printf("Time taken to complete decoding is %.7f \n", TotalTimeLoop);
 
   }
 
   return 0;
 }
-
-/*
-map(word, (first loc, num occur))
-map(first loc, word)
-*/
