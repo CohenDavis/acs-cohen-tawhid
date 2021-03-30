@@ -12,4 +12,8 @@ This feature will convert a raw data file into a file that contains the raw data
 
 # Querying
 
-This feature allows the user to look up a string data value in the encoded file. This function will take in the string data they want to look up and an encoded file. A function will first create a dictionary from the encoded file. The encoded file contains the string data and location of the data so it is simple to convert these two items from the file into a 
+This feature allows the user to look up a string data value in the encoded file. This function will take in the string data they want to look up and an encoded file. A function will first create a dictionary from the encoded file. The encoded file contains the string data and location of the data so it is simple to convert these two items from the file into a key value pair in order to populate the dictionary. This dictionary will also contain the frequency of how many times the data occurs in the file. Next the query feature will search this dictionary to determine if the string data given by the user exists in the file. If it exists then it will output how many times the string occur in the file. 
+
+# Decoding
+
+This feature will decode an encoded file into the original file it encoded from. It will first create a dictionary from the encoded file. The data and location of data in the encoded file will be used as key value pair of the dictionary. After this dictionary is populated, it will construct the original file. The original file will be created by placing the string data from the dictionary at it's correct location also given by the dictionary.  
