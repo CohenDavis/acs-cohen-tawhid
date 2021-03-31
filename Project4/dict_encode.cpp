@@ -2,7 +2,6 @@
 #include <fstream>
 #include <cstdlib>
 #include <time.h>
-#include <x86intrin.h>
 #include <map>
 
 //Dictionary format: map(original string, pair(line of first string occurence, total number of occurences))
@@ -77,10 +76,10 @@ void dict_gen_from_encoded(std::ifstream& encoded_data, DICT_TYPE& dictionary, s
       std::string remaining = line.substr(space_check + 1); //get rest of line after word
       space_check = remaining.find(' '); //find next space
       long long int first_loc = stoi(remaining.substr(pos, space_check)); //get location string, convert to int
-      long long int num_occur = stoi(remaining.substr(space_check + 1)); //get frquency string, convert to int
+      long long int num_occur = stoi(remaining.substr(space_check + 1)); //get frequency string, convert to int
 
       dictionary.insert(std::make_pair(word, std::make_pair(first_loc, num_occur)));
-      dict_supp.insert(std::make_pair(first_loc, word));
+      dict_supp.insert(std::make_pair(first_loc, word)); //helper structure to make decoding easier
     }
   }
 
@@ -148,10 +147,10 @@ int main(int argc, char** argv){
   if (mode == 'E' || mode == 'e'){ //encoding functionality
 
     clock_t Time1 = clock();
-    dict_gen_from_raw(instream, dictionary);
+    dict_gen_from_raw(instream, dictionary); //generate dictionary
     instream.close();
     std::ifstream instream(input_file);
-    output_encoded(instream, dictionary);
+    output_encoded(instream, dictionary); //use dictionary to convert raw file to encoded
     clock_t Time2 = clock();
     std::cout << "Encoded file generated" << std::endl;
     float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC; //calculate time taken to complete encoding
@@ -161,15 +160,20 @@ int main(int argc, char** argv){
   else if (mode == 'Q' || mode == 'q'){ //querying functionality
 
     clock_t Time1 = clock();
-    dict_gen_from_encoded(instream, dictionary, dict_supp);
+    dict_gen_from_encoded(instream, dictionary, dict_supp); //generate dictionary
+    /* Note - dict_supp is not useful here, and is only used for the
+    decoding functionality - it is present, however, to facilitate the reuse
+    of the dictionary generation function between the querying and decoding modes */
     instream.close();
-    DICT_TYPE::iterator it = dictionary.find(input_item);
+
+    DICT_TYPE::iterator it = dictionary.find(input_item); //perform query on dictionary
     if (it == dictionary.end()) {
       std::cout << "The item you entered is not in the provided file" << std::endl;
     }
     else {
       std::cout << it -> first << " occurs " << it -> second.second << " times in the provided file" << std::endl;
     }
+
     clock_t Time2 = clock();
     float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC; //calculate time taken to complete query
     printf("Time taken to complete query is %.7f \n", TotalTimeLoop);
@@ -178,10 +182,10 @@ int main(int argc, char** argv){
   else { //decoding functionality
 
     clock_t Time1 = clock();
-    dict_gen_from_encoded(instream, dictionary, dict_supp);
+    dict_gen_from_encoded(instream, dictionary, dict_supp); //generate dictionary
     instream.close();
     std::ifstream instream(input_file);
-    output_decoded(instream, dict_supp);
+    output_decoded(instream, dict_supp); //use dictionary data to convert encoded data back to raw
     clock_t Time2 = clock();
     std::cout << "Decoded file generated" << std::endl;
     float TotalTimeLoop = ((float) Time2 - (float) Time1) / CLOCKS_PER_SEC; //calculate time taken to complete decoding
