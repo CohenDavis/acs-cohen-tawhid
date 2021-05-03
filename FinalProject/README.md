@@ -23,3 +23,10 @@ unsigned int hash_function(std::string& key, long desired_size) {
 	}
 ```
 
+# Put and Get Functions
+
+The put function first hashes the key value pair. It then creates a new linked list node containing the key and value. This node is then added to the linked list associated with array index given by the hashed key in the beginning. 
+
+![hashtable](https://github.com/CohenDavis/acs-cohen-tawhid/blob/master/FinalProject/insert.PNG)
+
+The get function is similar to put function but the node already exists. The input is a key value. This key value is hashed to get an index value then the linked list associated with this hashed index is searched. The node containing the actual key value is then found and its value is returned. 
