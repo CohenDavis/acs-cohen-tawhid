@@ -167,6 +167,18 @@ public:
 
 	}
 
+	//Prints number of indices in table - more for dev purposes
+	void print_table_size(){
+		std::cout << "Table is " << current_table_size << std::endl;
+	}
+
+
+private:
+	Node** dict; //declare table object (dynamically)
+	long current_table_size = size; //number of indices in table
+	long num_items = 0; //number of nodes (key-value pairs) in table
+	mutable std::shared_mutex mutex_; //mutex for concurrency control
+
 	//Increases table size by 50 if load factor exceeds 0.75
 	void rehash_larger() {
 		//initialize temporary table
@@ -227,17 +239,6 @@ public:
 
 	}
 
-	//Prints number of indices in table - more for dev purposes
-	void print_table_size(){
-		std::cout << "Table is " << current_table_size << std::endl;
-	}
-
-
-private:
-	Node** dict; //declare table object (dynamically)
-	long current_table_size = size; //number of indices in table
-	long num_items = 0; //number of nodes (key-value pairs) in table
-	mutable std::shared_mutex mutex_; //mutex for concurrency control
 };
 
 //Main function used for testing the key-value store implementation
